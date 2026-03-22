@@ -3,13 +3,18 @@
 function nav(p) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(x => x.classList.remove('active'));
   document.getElementById('page-' + p).classList.add('active');
   const map = { study: 0, quiz: 1, words: 2, stats: 3, io: 4 };
   document.querySelectorAll('.nav-item')[map[p]]?.classList.add('active');
+  const bn = document.getElementById('bn-' + p);
+  if (bn) bn.classList.add('active');
   if (p === 'study') initStudy();
   if (p === 'words') renderList();
   if (p === 'stats') renderStats();
   if (p === 'quiz') fillDecks('quizDeck');
+  // スマホでページ切り替え時にトップにスクロール
+  document.querySelector('.main')?.scrollTo(0, 0);
 }
 
 // 初期サンプルデータ

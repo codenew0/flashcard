@@ -122,3 +122,97 @@ label{font-size:12px;color:var(--text2);display:block;margin-bottom:5px;}
 .toast{position:fixed;bottom:2rem;right:2rem;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:11px 18px;font-size:13px;color:var(--text);z-index:999;opacity:0;transform:translateY(8px);transition:all 0.2s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
 .io-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   スマホ対応 (レスポンシブ)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+@media (max-width: 640px) {
+
+  /* サイドバーを非表示 → 下部タブバーに切り替え */
+  .sidebar { display: none; }
+
+  /* メインコンテンツを全幅に */
+  .layout { flex-direction: column; height: auto; min-height: 100vh; }
+  .main { padding: 1.25rem 1rem 5rem; overflow-y: auto; }
+
+  /* 下部タブバー */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    height: 56px;
+  }
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    font-size: 10px;
+    color: var(--text3);
+    cursor: pointer;
+    transition: color 0.15s;
+    padding: 4px 0;
+  }
+  .bottom-nav-item .bn-icon { font-size: 18px; line-height: 1; }
+  .bottom-nav-item.active { color: var(--accent); }
+
+  /* ページタイトル */
+  .page-title { font-size: 1.35rem; }
+  .page-header { margin-bottom: 1.25rem; }
+
+  /* フラッシュカード */
+  .fc { height: 300px; }
+  .fc-img-box { height: 120px; }
+  .fc-word { font-size: 1.6rem; }
+  .fc-scene { max-width: 100%; }
+
+  /* 評価ボタンを大きく */
+  .rb { padding: 12px 28px; font-size: 14px; }
+  .rating-btns { gap: 12px; margin-top: 1rem; }
+
+  /* 統計グリッド：2列に */
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* IO グリッド：1列に */
+  .io-grid { grid-template-columns: 1fr; }
+
+  /* フォームの2列を1列に */
+  .form-row { grid-template-columns: 1fr; }
+
+  /* 検索行 */
+  .search-row input { max-width: 100%; }
+  .search-row select { max-width: 100%; }
+
+  /* 単語テーブル：翻訳・正答率列を非表示 */
+  .word-table th:nth-child(4),
+  .word-table td:nth-child(4),
+  .word-table th:nth-child(5),
+  .word-table td:nth-child(5) { display: none; }
+
+  /* モーダル */
+  .modal { padding: 1.5rem 1rem; border-radius: var(--radius) var(--radius) 0 0; }
+  .modal-bg { align-items: flex-end; padding: 0; }
+
+  /* クイズ */
+  .quiz-q { font-size: 1.8rem; }
+  .quiz-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .qc { padding: 12px 8px; font-size: 13px; }
+
+  /* トースト */
+  .toast { bottom: 4.5rem; left: 1rem; right: 1rem; text-align: center; }
+
+  /* ボタン全体タップしやすく */
+  .btn { padding: 10px 16px; }
+  .btn-sm { padding: 8px 12px; }
+}
+
+/* タブレット */
+@media (min-width: 641px) {
+  .bottom-nav { display: none; }
+}

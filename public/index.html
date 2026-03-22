@@ -101,6 +101,25 @@
   </main>
 </div>
 
+<!-- スマホ用下部タブバー -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-item active" onclick="nav('study')" id="bn-study">
+    <span class="bn-icon">📖</span><span>学習</span>
+  </div>
+  <div class="bottom-nav-item" onclick="nav('quiz')" id="bn-quiz">
+    <span class="bn-icon">🎯</span><span>クイズ</span>
+  </div>
+  <div class="bottom-nav-item" onclick="openAdd()" id="bn-add">
+    <span class="bn-icon">➕</span><span>追加</span>
+  </div>
+  <div class="bottom-nav-item" onclick="nav('words')" id="bn-words">
+    <span class="bn-icon">📝</span><span>単語</span>
+  </div>
+  <div class="bottom-nav-item" onclick="nav('stats')" id="bn-stats">
+    <span class="bn-icon">📊</span><span>統計</span>
+  </div>
+</nav>
+
 <!-- 単語追加/編集モーダル -->
 <div class="modal-bg" id="addModal">
   <div class="modal">
