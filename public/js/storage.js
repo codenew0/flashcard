@@ -3,7 +3,13 @@
 let words = JSON.parse(localStorage.getItem('fc_words') || '[]');
 
 function save() {
-  localStorage.setItem('fc_words', JSON.stringify(words));
+  try {
+    localStorage.setItem('fc_words', JSON.stringify(words));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError') {
+      alert('保存容量が上限に達しました。不要な単語を削除するか、エクスポートしてください。');
+    }
+  }
 }
 
 function uid() {
