@@ -1,0 +1,12 @@
+{
+  "name": "flashcard-app",
+  "version": "1.0.0",
+  "description": "語学フラッシュカードアプリ",
+  "scripts": {
+    "dev": "npx wrangler pages dev public --compatibility-flag=nodejs_compat",
+    "deploy": "npx wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

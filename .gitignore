@@ -1,0 +1,30 @@
+# 依存パッケージ
+node_modules/
+
+# APIキー・環境変数（絶対にGitにアップしない）
+.env
+.env.local
+.env.production
+.dev.vars
+
+# ビルド成果物
+dist/
+.wrangler/
+.output/
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ログ
+*.log
+npm-debug.log*
