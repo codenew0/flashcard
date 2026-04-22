@@ -13,7 +13,10 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ error: 'invalid params' }), { status: 400, headers });
   }
 
-  const geminiKey = context.env.GEMINI_API_KEY || 'AIzaSyCQgbSrfbErDvoGT-0-yKAsgs9j_mQhAXs';
+  const geminiKey = context.env.GEMINI_API_KEY;
+  if (!geminiKey) {
+    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not set' }), { status: 500, headers });
+  }
   const langNames = { en: 'English', ja: 'Japanese', zh: 'Chinese' };
   let prompt;
   if (to === 'hira') {
