@@ -1,11 +1,9 @@
 // functions/api/translate.js
-// Cloudflare Pages Functions - 翻訳APIプロキシ
-// APIキーは Cloudflare の環境変数に保存するので、フロントに露出しない
+// Cloudflare Pages Functions - 翻訳APIプロキシ（Gemini使用）
 
 export async function onRequestPost(context) {
   const { text, from, to } = await context.request.json();
 
-  // CORS ヘッダー
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',
@@ -15,22 +13,31 @@ export async function onRequestPost(context) {
     return new Response(JSON.stringify({ error: 'invalid params' }), { status: 400, headers });
   }
 
-  // DeepL API（環境変数 DEEPL_API_KEY に設定）
-  const deepLKey = context.env.DEEPL_API_KEY;
-  if (deepLKey) {
-    try {
-      const dlLang = { en: 'EN', ja: 'JA', zh: 'ZH' };
-      const res = await fetch('https://api-free.deepl.com/v2/translate', {
+  const geminiKey = context.env.GEMINI_API_KEY || 'AIzaSyCQgbSrfbErDvoGT-0-yKAsgs9j_mQhAXs';
+  const langNames = { en: 'English', ja: 'Japanese', zh: 'Chinese' };
+  const prompt = `Translate the following ${langNames[from] || from} text to ${langNames[to] || to}. Output ONLY the translated text with absolutely no explanations, notes, or additional content:\n\n${text}`;
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
+      {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `auth_key=${deepLKey}&text=${encodeURIComponent(text)}&source_lang=${(dlLang[from] || from).toUpperCase()}&target_lang=${(dlLang[to] || to).toUpperCase()}`
-      });
-      const data = await res.json();
-      if (data.translations?.[0]?.text) {
-        return new Response(JSON.stringify({ translation: data.translations[0].text }), { headers });
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.1,
+            thinkingConfig: { thinkingBudget: 0 }
+          }
+        })
       }
-    } catch (e) {}
-  }
+    );
+    const data = await res.json();
+    const translation = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if (translation) {
+      return new Response(JSON.stringify({ translation }), { headers });
+    }
+  } catch (e) {}
 
   // フォールバック: Google Translate 非公式エンドポイント
   try {

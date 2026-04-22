@@ -23,12 +23,17 @@ function closeAdd() {
 
 function setupTransFields(lang, w = null) {
   const isJa = lang === 'ja';
+  const isZh = lang === 'zh';
   document.getElementById('furiGroup').style.display = isJa ? 'block' : 'none';
   const tf = document.getElementById('transFields');
   if (isJa) {
     tf.innerHTML = `
       <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${w?.translations?.en || ''}"></div>
       <div class="form-group"><label>中国語訳</label><input type="text" id="fzh" placeholder="中文" value="${w?.translations?.zh || ''}"></div>`;
+  } else if (isZh) {
+    tf.innerHTML = `
+      <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${w?.translations?.en || ''}"></div>
+      <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${w?.translations?.ja || ''}"></div>`;
   } else {
     tf.innerHTML = `
       <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${w?.translations?.ja || ''}"></div>
@@ -47,6 +52,9 @@ async function saveWord() {
   if (lang === 'ja') {
     const en = document.getElementById('fen')?.value.trim(); if (en) translations.en = en;
     const zh = document.getElementById('fzh')?.value.trim(); if (zh) translations.zh = zh;
+  } else if (lang === 'zh') {
+    const en = document.getElementById('fen')?.value.trim(); if (en) translations.en = en;
+    const ja = document.getElementById('fja')?.value.trim(); if (ja) translations.ja = ja;
   } else {
     const ja = document.getElementById('fja')?.value.trim(); if (ja) translations.ja = ja;
     const zh = document.getElementById('fzh')?.value.trim(); if (zh) translations.zh = zh;
@@ -55,15 +63,17 @@ async function saveWord() {
   const btn = document.getElementById('saveBtn');
   btn.textContent = '保存中...'; btn.disabled = true;
 
-  const imgQ = lang === 'ja' ? (translations.en || word) : word;
-  const imageUrl = await getImg(imgQ);
+  // 画像検索クエリ: 日本語・中国語は英語訳を使用
+  const imgQ = (lang === 'ja' || lang === 'zh') ? (translations.en || word) : word;
+  const result = await getImg(imgQ, 0);
+  const imageUrl = result?.url || null;
 
   const isNew = !editId;
   if (editId) {
     const i = words.findIndex(x => x.id === editId);
-    words[i] = { ...words[i], word, lang, deck, memo, furigana, translations, imageUrl: imageUrl || words[i].imageUrl };
+    words[i] = { ...words[i], word, lang, deck, memo, furigana, translations, imageUrl: imageUrl || words[i].imageUrl, imageSkip: 0 };
   } else {
-    words.push({ id: uid(), word, lang, deck, memo, furigana, translations, imageUrl, stats: { c: 0, t: 0 } });
+    words.push({ id: uid(), word, lang, deck, memo, furigana, translations, imageUrl, imageSkip: 0, stats: { c: 0, t: 0 } });
   }
 
   const savedWord = isNew ? words[words.length - 1] : words.find(x => x.id === editId);
@@ -73,7 +83,6 @@ async function saveWord() {
 
   if (document.getElementById('page-words').classList.contains('active')) renderList();
 
-  // 学習画面が開いていたら即座にキューに追加して表示
   if (document.getElementById('page-study').classList.contains('active')) {
     if (isNew && savedWord) {
       studyQ.push(savedWord);
