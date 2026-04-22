@@ -12,7 +12,7 @@ function detectLang(text) {
 
 // 翻訳フィールドをクリア
 function clearTransFields() {
-  const ids = ['fen', 'fja', 'fzh'];
+  const ids = ['fen', 'fja', 'fzh', 'ffuri'];
   ids.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -68,10 +68,16 @@ async function autoTrans() {
   if (!word) return;
   document.getElementById('transSpin').style.display = 'inline-block';
   if (lang === 'ja') {
-    const [en, zh] = await Promise.all([trans(word, 'ja', 'en'), trans(word, 'ja', 'zh')]);
+    const [en, zh, hira] = await Promise.all([
+      trans(word, 'ja', 'en'),
+      trans(word, 'ja', 'zh'),
+      trans(word, 'ja', 'hira')
+    ]);
     const e = document.getElementById('fen'), z = document.getElementById('fzh');
     if (e) e.value = en;
     if (z) z.value = zh;
+    const f = document.getElementById('ffuri');
+    if (f && hira) f.value = hira;
   } else if (lang === 'zh') {
     const [en, ja] = await Promise.all([trans(word, 'zh', 'en'), trans(word, 'zh', 'ja')]);
     const e = document.getElementById('fen'), j = document.getElementById('fja');

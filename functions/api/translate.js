@@ -15,7 +15,12 @@ export async function onRequestPost(context) {
 
   const geminiKey = context.env.GEMINI_API_KEY || 'AIzaSyCQgbSrfbErDvoGT-0-yKAsgs9j_mQhAXs';
   const langNames = { en: 'English', ja: 'Japanese', zh: 'Chinese' };
-  const prompt = `Translate the following ${langNames[from] || from} text to ${langNames[to] || to}. Output ONLY the translated text with absolutely no explanations, notes, or additional content:\n\n${text}`;
+  let prompt;
+  if (to === 'hira') {
+    prompt = `Convert the following Japanese word to hiragana reading (furigana). Output ONLY the hiragana, no kanji, no katakana, no explanations, no punctuation:\n\n${text}`;
+  } else {
+    prompt = `Translate the following ${langNames[from] || from} text to ${langNames[to] || to}. Output ONLY the translated text with absolutely no explanations, notes, or additional content:\n\n${text}`;
+  }
 
   try {
     const res = await fetch(
@@ -38,6 +43,11 @@ export async function onRequestPost(context) {
       return new Response(JSON.stringify({ translation }), { headers });
     }
   } catch (e) {}
+
+  // ひらがな変換はGoogle Translateでは対応不可
+  if (to === 'hira') {
+    return new Response(JSON.stringify({ translation: '' }), { headers });
+  }
 
   // フォールバック: Google Translate 非公式エンドポイント
   try {
