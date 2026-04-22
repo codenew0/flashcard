@@ -15,20 +15,26 @@ async function getImg(word, skip = 0) {
 // 画像なし時のプレースホルダーHTML
 function noImgHtml(id, word) {
   return `<div class="img-placeholder">
-    <div class="ph-word">${word}</div>
+    <div class="ph-word">${esc(word)}</div>
     <div class="ph-hint">画像なし</div>
-    <button class="retry-img-btn" id="retry-${id}" onclick="event.stopPropagation();retryImage('${id}')">画像を取得</button>
+    <button class="retry-img-btn" id="retry-${esc(id)}" onclick="event.stopPropagation();retryImage('${esc(id)}')">画像を取得</button>
   </div>`;
+}
+
+// 画像読み込みエラー時のハンドラ（word IDから安全に単語を引く）
+function imgErr(imgEl, wordId) {
+  const w = words.find(x => x.id === wordId);
+  const word = w?.word || '';
+  imgEl.parentNode.innerHTML = noImgHtml(wordId, word);
 }
 
 // 画像ボックスのHTML生成
 function imgBoxHtml(w) {
   if (w.imageUrl) {
-    const skip = w.imageSkip || 0;
     return `<div class="fc-img-box">
-      <img src="${w.imageUrl}" alt="${w.word}"
-        onerror="this.parentNode.innerHTML=noImgHtml('${w.id}','${w.word}')">
-      <button class="next-img-btn" onclick="event.stopPropagation();nextImage('${w.id}')" title="次の画像">&#8635;</button>
+      <img src="${esc(w.imageUrl)}" alt="${esc(w.word)}"
+        onerror="imgErr(this, '${esc(w.id)}')">
+      <button class="next-img-btn" onclick="event.stopPropagation();nextImage('${esc(w.id)}')" title="次の画像">&#8635;</button>
     </div>`;
   }
   return `<div class="fc-img-box">${noImgHtml(w.id, w.word)}</div>`;
@@ -69,7 +75,6 @@ async function nextImage(wordId) {
     if (studyQ[sIdx]?.id === wordId) { studyQ[sIdx].imageUrl = result.url; studyQ[sIdx].imageSkip = nextSkip; renderCard(); }
     showToast('画像を変更しました');
   } else {
-    // スキップが範囲外ならリセット
     const result0 = await getImg(imgQ, 0);
     if (result0?.url) {
       w.imageUrl = result0.url;

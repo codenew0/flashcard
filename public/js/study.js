@@ -24,7 +24,7 @@ function renderCard() {
   const backTrans = Object.entries(w.translations || {}).map(([k, v]) => `
     <div class="fc-trans-row">
       <div class="fc-trans-lang">${k === 'en' ? '🇺🇸 English' : k === 'ja' ? '🇯🇵 日本語' : '🇨🇳 中文'}</div>
-      <div class="fc-trans-val ${k === 'ja' ? 'ja' : ''}">${v}</div>
+      <div class="fc-trans-val ${k === 'ja' ? 'ja' : ''}">${esc(v)}</div>
     </div>`).join('');
 
   document.getElementById('study-area').innerHTML = `
@@ -32,14 +32,14 @@ function renderCard() {
       <div class="fc" id="fc" onclick="flipCard()">
         <div class="fc-face">
           ${imgBoxHtml(w)}
-          ${w.furigana ? `<div class="fc-furi">${w.furigana}</div>` : ''}
-          <div class="fc-word">${w.word}</div>
-          ${w.deck ? `<div class="fc-badge-row"><span class="badge badge-${w.lang}">${w.deck}</span></div>` : ''}
+          ${w.furigana ? `<div class="fc-furi">${esc(w.furigana)}</div>` : ''}
+          <div class="fc-word">${esc(w.word)}</div>
+          ${w.deck ? `<div class="fc-badge-row"><span class="badge badge-${esc(w.lang)}">${esc(w.deck)}</span></div>` : ''}
           <div class="fc-hint">タップして翻訳を見る</div>
         </div>
         <div class="fc-face fc-back">
           <div>${backTrans || '<div style="color:var(--text3)">翻訳なし</div>'}</div>
-          ${w.memo ? `<div style="font-size:12px;color:var(--text3);margin-top:1rem;">💬 ${w.memo}</div>` : ''}
+          ${w.memo ? `<div style="font-size:12px;color:var(--text3);margin-top:1rem;">💬 ${esc(w.memo)}</div>` : ''}
         </div>
       </div>
     </div>

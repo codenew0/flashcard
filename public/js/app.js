@@ -38,7 +38,6 @@ if (words.length === 0) {
       stats: { c: 0, t: 0 } },
   ];
   save();
-  fillAllDecks();
 }
 
 fillAllDecks();

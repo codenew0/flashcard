@@ -3,6 +3,7 @@
 let quizQ = [];
 let qIdx = 0;
 let qScore = { c: 0, t: 0 };
+let qCorrectId = null;
 
 function startQuiz() {
   fillDecks('quizDeck');
@@ -23,6 +24,7 @@ function renderQuiz() {
   const question = w.lang === 'en' ? (w.translations?.ja || w.word) : (w.translations?.en || w.word);
   const qLabel = w.lang === 'en' ? '日本語の意味は？' : '英語で？';
   const pct = Math.round(qIdx / quizQ.length * 100);
+  qCorrectId = w.id;
 
   document.getElementById('quiz-area').innerHTML = `
     <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:4px;">${qIdx + 1} / ${quizQ.length}</div>
@@ -30,28 +32,29 @@ function renderQuiz() {
       <div class="prog-fill" style="width:${pct}%"></div>
     </div>
     <div style="text-align:center;font-size:13px;color:var(--text3);">${qLabel}</div>
-    <div class="quiz-q">${question}</div>
-    <div class="quiz-furi">${w.furigana && w.lang === 'ja' ? w.furigana : ''}</div>
+    <div class="quiz-q">${esc(question)}</div>
+    <div class="quiz-furi">${w.furigana && w.lang === 'ja' ? esc(w.furigana) : ''}</div>
     <div class="quiz-grid">
-      ${choices.map(c => `<div class="qc" onclick="ansQ('${c.id}','${w.id}',this)">${c.word}</div>`).join('')}
+      ${choices.map(c => `<div class="qc" data-id="${esc(c.id)}" onclick="ansQ(this)">${esc(c.word)}</div>`).join('')}
     </div>`;
 }
 
-function ansQ(chosen, correct, el) {
+function ansQ(el) {
+  const chosen = el.getAttribute('data-id');
   document.querySelectorAll('.qc').forEach(c => { c.style.pointerEvents = 'none'; });
   qScore.t++;
-  if (chosen === correct) { el.classList.add('correct'); qScore.c++; }
+  if (chosen === qCorrectId) { el.classList.add('correct'); qScore.c++; }
   else {
     el.classList.add('wrong');
     document.querySelectorAll('.qc').forEach(c => {
-      if (c.getAttribute('onclick')?.includes(`'${correct}'`)) c.classList.add('correct');
+      if (c.getAttribute('data-id') === qCorrectId) c.classList.add('correct');
     });
   }
-  const wo = words.find(x => x.id === correct);
+  const wo = words.find(x => x.id === qCorrectId);
   if (wo) {
     wo.stats = wo.stats || { c: 0, t: 0 };
     wo.stats.t++;
-    if (chosen === correct) wo.stats.c++;
+    if (chosen === qCorrectId) wo.stats.c++;
     save();
   }
   setTimeout(() => { qIdx++; renderQuiz(); }, 1100);

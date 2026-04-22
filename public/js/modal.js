@@ -28,16 +28,16 @@ function setupTransFields(lang, w = null) {
   const tf = document.getElementById('transFields');
   if (isJa) {
     tf.innerHTML = `
-      <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${w?.translations?.en || ''}"></div>
-      <div class="form-group"><label>中国語訳</label><input type="text" id="fzh" placeholder="中文" value="${w?.translations?.zh || ''}"></div>`;
+      <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${esc(w?.translations?.en || '')}"></div>
+      <div class="form-group"><label>中国語訳</label><input type="text" id="fzh" placeholder="中文" value="${esc(w?.translations?.zh || '')}"></div>`;
   } else if (isZh) {
     tf.innerHTML = `
-      <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${w?.translations?.en || ''}"></div>
-      <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${w?.translations?.ja || ''}"></div>`;
+      <div class="form-group"><label>英語訳</label><input type="text" id="fen" placeholder="English" value="${esc(w?.translations?.en || '')}"></div>
+      <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${esc(w?.translations?.ja || '')}"></div>`;
   } else {
     tf.innerHTML = `
-      <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${w?.translations?.ja || ''}"></div>
-      <div class="form-group"><label>中国語訳</label><input type="text" id="fzh" placeholder="中文" value="${w?.translations?.zh || ''}"></div>`;
+      <div class="form-group"><label>日本語訳</label><input type="text" id="fja" placeholder="日本語" value="${esc(w?.translations?.ja || '')}"></div>
+      <div class="form-group"><label>中国語訳</label><input type="text" id="fzh" placeholder="中文" value="${esc(w?.translations?.zh || '')}"></div>`;
   }
 }
 

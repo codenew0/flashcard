@@ -18,28 +18,29 @@ function renderList() {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:2rem;">見つかりません</td></tr>';
     return;
   }
+  const langLabel = { en: 'English', ja: '日本語', zh: '中文' };
   tbody.innerHTML = list.map(w => {
     const rate = w.stats?.t > 0 ? Math.round(w.stats.c / w.stats.t * 100) : null;
     const tr = Object.entries(w.translations || {}).map(([k, v]) =>
-      `<span class="badge badge-${k}">${v}</span>`).join('');
+      `<span class="badge badge-${esc(k)}">${esc(v)}</span>`).join('');
     const imgThumb = w.imageUrl
-      ? `<img src="${w.imageUrl}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" onerror="this.style.display='none'">`
+      ? `<img src="${esc(w.imageUrl)}" style="width:36px;height:36px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" onerror="this.style.display='none'">`
       : '';
     return `<tr>
       <td><div style="display:flex;align-items:center;">${imgThumb}<div>
-        <div style="font-weight:500;">${w.word}</div>
-        ${w.furigana ? `<div style="font-size:11px;color:var(--accent);">${w.furigana}</div>` : ''}
-        ${w.memo ? `<div style="font-size:11px;color:var(--text3);">${w.memo}</div>` : ''}
+        <div style="font-weight:500;">${esc(w.word)}</div>
+        ${w.furigana ? `<div style="font-size:11px;color:var(--accent);">${esc(w.furigana)}</div>` : ''}
+        ${w.memo ? `<div style="font-size:11px;color:var(--text3);">${esc(w.memo)}</div>` : ''}
       </div></div></td>
-      <td><span class="badge badge-${w.lang}">${w.lang === 'ja' ? '日本語' : 'English'}</span></td>
-      <td style="font-size:13px;color:var(--text2);">${w.deck || 'デフォルト'}</td>
+      <td><span class="badge badge-${esc(w.lang)}">${esc(langLabel[w.lang] || w.lang)}</span></td>
+      <td style="font-size:13px;color:var(--text2);">${esc(w.deck || 'デフォルト')}</td>
       <td>${tr}</td>
       <td>${rate !== null
         ? `<div>${rate}%</div><div class="prog-bar" style="width:60px;"><div class="prog-fill" style="width:${rate}%"></div></div>`
         : '<span style="color:var(--text3);">未学習</span>'}</td>
       <td style="white-space:nowrap;">
-        <button class="btn btn-sm" onclick="openAdd('${w.id}')" style="margin-right:4px;">✏️</button>
-        <button class="btn btn-sm btn-danger" onclick="delWord('${w.id}')">🗑</button>
+        <button class="btn btn-sm" onclick="openAdd('${esc(w.id)}')" style="margin-right:4px;">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="delWord('${esc(w.id)}')">🗑</button>
       </td>
     </tr>`;
   }).join('');
@@ -68,10 +69,10 @@ function renderStats() {
   document.getElementById('deckProg').innerHTML = decks.map(d => {
     const dw = words.filter(w => (w.deck || 'デフォルト') === d);
     const ds = dw.filter(w => w.stats?.t > 0).length;
-    const p = Math.round(ds / dw.length * 100);
+    const p = dw.length > 0 ? Math.round(ds / dw.length * 100) : 0;
     return `<div style="margin-bottom:1rem;">
       <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px;">
-        <span>${d}</span><span style="color:var(--text2);">${ds}/${dw.length}</span>
+        <span>${esc(d)}</span><span style="color:var(--text2);">${ds}/${dw.length}</span>
       </div>
       <div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div>
     </div>`;
