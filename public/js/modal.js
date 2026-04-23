@@ -47,7 +47,7 @@ async function saveWord() {
   const lang = document.getElementById('fl').value;
   const deck = document.getElementById('fd').value.trim() || 'デフォルト';
   const memo = document.getElementById('fmemo').value.trim();
-  const furigana = lang === 'ja' ? document.getElementById('ffuri').value.trim() : '';
+  let furigana = lang === 'ja' ? document.getElementById('ffuri').value.trim() : '';
   const translations = {};
   if (lang === 'ja') {
     const en = document.getElementById('fen')?.value.trim(); if (en) translations.en = en;
@@ -63,8 +63,29 @@ async function saveWord() {
   const btn = document.getElementById('saveBtn');
   btn.textContent = '保存中...'; btn.disabled = true;
 
+  // 翻訳が未完了なら同期取得（特に英訳は画像検索に必要）
+  const needed = lang === 'ja' ? ['en', 'zh', 'hira']
+               : lang === 'zh' ? ['en', 'ja']
+               : ['ja', 'zh'];
+  const missing = needed.filter(t => {
+    if (t === 'hira') return !furigana;
+    return !translations[t];
+  });
+  if (missing.length) {
+    btn.textContent = '翻訳中...';
+    const got = await transMulti(word, lang, missing);
+    for (const t of missing) {
+      if (t === 'hira') {
+        if (got.hira) furigana = got.hira;
+      } else if (got[t]) {
+        translations[t] = got[t];
+      }
+    }
+  }
+
   // 画像検索クエリ: 日本語・中国語は英語訳を使用
   const imgQ = (lang === 'ja' || lang === 'zh') ? (translations.en || word) : word;
+  btn.textContent = '画像検索中...';
   const result = await getImg(imgQ, 0);
   const imageUrl = result?.url || null;
 
